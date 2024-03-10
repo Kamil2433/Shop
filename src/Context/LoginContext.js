@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useContext } from 'react'
 import useLocalStoragehook from '../hooks/useLocalstorage';
-import Notescontext from './NotesContext';
 // import useAlertenvokefunction from '../hooks/useAlertenvoke';
 
 const LogContext = React.createContext();
@@ -24,7 +23,7 @@ export default function LoginContext({children}) {
       // const {setalert,setmessage}=Notescontext()
 
       try {
-     const response=await fetch('https://cloudnote-backend-etc8.onrender.com/api/auth/',{
+     const response=await fetch('http://localhost:3200/api/auth/',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -40,16 +39,15 @@ export default function LoginContext({children}) {
     if(response.ok){
 
       setauth(res);
-      getname(inputid,inputpassword,res);
 
       setmessagel("User Login Successful")
       // useAlertenvokefunction("Login Successful")
-      return setsucess(true);
+       setsucess(true);
 
       // setalert(true)
       // setmessage('Login Successful')
     }else{
-
+setsucess(false)
       setvariantl('danger')
       setmessagel("User Login UnSuccessful")
 
@@ -69,7 +67,7 @@ export default function LoginContext({children}) {
       // console.log(auth)
             setauth(resp);
 
-    const response=await fetch("https://cloudnote-backend-etc8.onrender.com/api/auth/getuser",{
+    const response=await fetch("http://localhost:3200/api/auth/getuser",{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -101,7 +99,7 @@ export default function LoginContext({children}) {
   
       console.log(JSON.stringify(formdata))
   
-      const response=await fetch("https://cloudnote-backend-etc8.onrender.com/api/auth/reg",{
+      const response=await fetch("http://localhost:3200/api/auth/reg",{
        method:'POST',
        headers:{
          'Content-Type':'application/json',
@@ -116,7 +114,7 @@ export default function LoginContext({children}) {
   if(response.ok){
     setmessagel("User Register Successful")
 
-    const set=await setsucess(true);
+     setsucess(true);
   
   }else{
     setvariantl('danger')

@@ -1,107 +1,97 @@
 const express = require("express");
 const router = express.Router();
-const user = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const fetchuser=require('../middleware/fetchuser')
-
+const db = require("../db"); // Import SQLite database connection
+const fetchuser = require("../middleware/fetchuser");
 
 const authsrt = "cloudnote";
 
-
-
-
 //register a new user
+// Register a new user
 router.post("/reg", async (req, res) => {
-  console.log(req.body);
+  const { name, id, password } = req.body;
 
-  const temp = await user.findOne({ id: req.body.id });
+  // Check if the user ID already exists
+  db.get("SELECT COUNT(*) AS count FROM User WHERE id = ?", [id], (err, row) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    } else if (row.count > 0) {
+      res.status(400).json({ error: "ID unavailable, please try with a different ID" });
+    } else {
+      // Hash the password
+      bcrypt.hash(password, 10, async (hashErr, hash) => {
+        if (hashErr) {
+          console.error(hashErr);
+          res.status(500).json({ error: "Internal server error" });
+        } else {
+          try {
+            // Insert the new user into the database
+            const insertUserQuery = 'INSERT INTO User (name, password, id) VALUES (?, ?, ?)';
+            await db.run(insertUserQuery, [name, hash, id]);
 
-  if (temp) {
-    return res
-      .status(400)
-      .json({ error: "ID unavailable, please try with different id" });
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  const finalpass = await bcrypt.hash(req.body.password, salt);
-
-  const usr = await user.create({
-    name: req.body.name,
-    password: finalpass,
-    id: req.body.id,
+            // Construct the response
+            const newUser = { name, id };
+            res.json(newUser);
+          } catch (insertErr) {
+            console.error(insertErr);
+            res.status(500).json({ error: "Internal server error" });
+          }
+        }
+      });
+    }
   });
-
-  usr.save();
-
-  // const data = {
-  //   user: {
-  //     id: user.id,
-  //   },
-  // };
-  // const authtoken = jwt.sign(data, authsrt);
-
-  res.json(usr);
 });
 
 
 //login a user
-router.post("/", async (req, res) => {
-  console.log(req.body);
+// Login a user
+router.post("/", (req, res) => {
+  const { id, password } = req.body;
 
-  // const temp = await user.findOne({ id: req.body.id });
-
-  // if (temp) {
-  //   return res
-  //     .status(400)
-  //     .json({ error: "ID unavailable, please try with different id" });
-  // }
-
-  const userdata=await user.findOne({id:req.body.id});
-  // user= await user.find({userName:"Andressa"})
-
-  if(!userdata){
-
-  return  res
-    .status(400)
-    .json({ error: "Invalid Credentials, user doesnt exists" });
-  }
-
-  const passwordcomp=await bcrypt.compare(req.body.password,userdata.password);
-
-  if(!passwordcomp){
-    return res
-    .status(400)
-    .json({ error: "Invalid Credentials" });
-  }
-
-  
-  
-
-  const data = {
-    user: {
-      id: userdata._id,
-    },
-  };
-  const authtoken = jwt.sign(data, authsrt);
-
-  res.json(authtoken)
+  // Retrieve user data by ID
+  db.get("SELECT * FROM User WHERE id = ?", [id], async (err, user) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    } else if (!user) {
+      res.status(404).json({ error: "User not found" });
+    } else {
+      // Compare passwords
+      try {
+        const passwordMatches = await bcrypt.compare(password, user.password);
+        if (!passwordMatches) {
+          res.status(400).json({ error: "Invalid Credentials" });
+        } else {
+          // Construct JWT token
+          const data = {
+            user: {
+              id: user.id,
+            },
+          };
+          const authtoken = jwt.sign(data, authsrt);
+          res.json(authtoken);
+        }
+      } catch (compareErr) {
+        console.error(compareErr);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  });
 });
 
 
-router.post('/getuser',fetchuser,async(req,res)=>{
- 
+
+router.post("/getuser", fetchuser, async (req, res) => {
   try {
-    let userid=await user.findOne({id:req.body.id})
+    const tempStmt = db.prepare('SELECT * FROM User WHERE id = ?');
+    const userid = await tempStmt.get(req.body.id);
     res.send(userid);
   } catch (error) {
     console.log(error.message);
-    res.status(500).send('err')
+    res.status(500).send("err");
   }
-
-
-})
-
-
+});
 
 module.exports = router;

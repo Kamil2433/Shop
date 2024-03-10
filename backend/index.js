@@ -1,5 +1,4 @@
 
-const connectmongo=require('./db.js')
 const express = require('express')
 const app = express()
 const port = 3200
@@ -10,7 +9,6 @@ const cors = require('cors');
 app.use(cors());
 
 app.use(express.json());
-connectmongo()
 
 
 
@@ -26,7 +24,7 @@ connectmongo()
 // }
 
 app.use('/api/auth',require('./routes/auth'))
-app.use('/api/notes',require('./routes/notes'))
+app.use('/api/shop',require('./routes/shop'))
 
 // app.get('/', (req, res) => {
 //   res.send('Welcome to CloudNote')

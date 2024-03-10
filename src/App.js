@@ -1,11 +1,12 @@
 
 import React from 'react';
 import LoginContext from './Context/LoginContext';
-import Login from './Components/Login';
-import Notescontext from './Context/NotesContext';
+import Shoppingcontext from './Context/Shoppingcontext';
 import Dashboard from './Components/Dashboard';
 import Navbaruse from './Components/Navbaruse';
-import { useLogin } from './Context/LoginContext';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Graph from './Components/Graph';
+
 
 function App() {
 
@@ -17,27 +18,37 @@ function App() {
   return (
 
        <LoginContext>
-        <Notescontext>
+        <Shoppingcontext>
 
 
 
+
+    
+
+
+   <Router >
     <div className=" h1 mt-3 ml-2">
-    <i class="fa-solid fa-note-sticky fa-xl" style={{color: "#10bbf4",margin:"4px"}}></i>
-    TaskManager 
+    <i class="fa-solid fa-basket-shopping fa-xl" style={{color: "#10bbf4",margin:"4px"}}></i>
+    Shop.com 
                  
     </div>
-
-   {/* if(name){
-      <Navbaruse/>
-    }else{
-      <div className='float-right'></div>} */}
-    
    <Navbaruse/>
+      <Routes>
+        <Route key="home" path='/' element={<Dashboard/>} />
+        <Route key="home" path='/reports' element={<Graph/>} />
 
-    <Dashboard/>
+     
+      </Routes>
+      </Router >
+
+
+
+
+
+
       
 
-      </Notescontext>
+      </Shoppingcontext>
        </LoginContext>
   );
 }

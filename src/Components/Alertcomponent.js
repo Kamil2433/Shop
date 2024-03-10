@@ -1,6 +1,6 @@
 
 import {Container , Alert,} from 'react-bootstrap'
-import { useNotes } from '../Context/NotesContext';
+import { useShop } from '../Context/Shoppingcontext';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useLogin } from '../Context/LoginContext';
@@ -8,7 +8,7 @@ import { useLogin } from '../Context/LoginContext';
 
 function Alertcomponent(props) {  
 
-    const {message,setalert,setmessage,variant,setvariant}=useNotes()
+    const {message,setalert,setmessage,variant,setvariant}=useShop()
     const {setmessagel,setvariantl}=useLogin()
  
 

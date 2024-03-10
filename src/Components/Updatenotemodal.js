@@ -3,14 +3,14 @@ import { Modal, Button, Form, ModalHeader, ModalBody} from 'react-bootstrap';
 import Col from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { useRef } from 'react';
-import { useNotes } from '../Context/NotesContext';
+import { useShop } from '../Context/Shoppingcontext';
 import CloseButton from 'react-bootstrap/CloseButton';
 import { useEffect } from 'react';
 
 export default function Updatenodemodal({onHide,giventitle,givendesc,givenid}) {
 
 
-    const {updatenote}=useNotes();
+    const {updatenote}=useShop();
 
             const title=useRef(giventitle);
             const description=useRef(givendesc);

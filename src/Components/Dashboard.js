@@ -5,8 +5,8 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Login from './Login';
-import Notes from './Notes';
-import { useNotes } from '../Context/NotesContext';
+import Items from './Items';
+import { useShop } from '../Context/Shoppingcontext';
 import { useEffect } from 'react';
 
 
@@ -15,20 +15,20 @@ import { useEffect } from 'react';
 
 export default function Dashboard() {
     const {auth}=useLogin();
-    const {fetchnotes,notes}=useNotes()
+    const {fetchitems,items}=useShop()
     
 
     useEffect(()=>{
     
-      fetchnotes();
-    // console.log(Notes);
+      fetchitems();
+
 
 
 },[]);
   return (
 
 
-    (!auth)?<Login/>:<Notes given={notes}/>
+    (!auth)?<Login/>:<Items given={items}/>
 
   
   )
